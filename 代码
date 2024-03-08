@@ -1,0 +1,88 @@
+import json
+
+def load_passwords():
+    try:
+        with open("passwords.json", "r") as file:
+            passwords = json.load(file)
+    except FileNotFoundError:
+        passwords = {}
+    
+    return passwords
+
+def save_passwords(passwords):
+    with open("passwords.json", "w") as file:
+        json.dump(passwords, file, indent=4)
+
+def add_password(passwords, website, username, password):
+    if website in passwords:
+        print(f"Password for {website} already exists. Please use update_password() to update it.")
+    else:
+        passwords[website] = {
+            "username": username,
+            "password": password
+        }
+        save_passwords(passwords)
+        print(f"Password for {website} added successfully.")
+
+def update_password(passwords, website, new_password):
+    if website in passwords:
+        passwords[website]["password"] = new_password
+        save_passwords(passwords)
+        print(f"Password for {website} updated successfully.")
+    else:
+        print(f"Password for {website} does not exist. Please use add_password() to add it.")
+
+def delete_password(passwords, website):
+    if website in passwords:
+        del passwords[website]
+        save_passwords(passwords)
+        print(f"Password for {website} deleted successfully.")
+    else:
+        print(f"Password for {website} does not exist.")
+
+def list_passwords(passwords):
+    if passwords:
+        print("Stored Passwords:")
+        print("-----------------")
+        for website, data in passwords.items():
+            print(f"Website: {website}")
+            print(f"Username: {data['username']}")
+            print(f"Password: {data['password']}")
+            print("-----------------")
+    else:
+        print("No passwords stored.")
+
+def main():
+    passwords = load_passwords()
+
+    while True:
+        print("Password Manager")
+        print("1. Add a password")
+        print("2. Update a password")
+        print("3. Delete a password")
+        print("4. List all passwords")
+        print("5. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            website = input("Enter the website: ")
+            username = input("Enter the username: ")
+            password = input("Enter the password: ")
+            add_password(passwords, website, username, password)
+        elif choice == "2":
+            website = input("Enter the website: ")
+            new_password = input("Enter the new password: ")
+            update_password(passwords, website, new_password)
+        elif choice == "3":
+            website = input("Enter the website: ")
+            delete_password(passwords, website)
+        elif choice == "4":
+            list_passwords(passwords)
+        elif choice == "5":
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
